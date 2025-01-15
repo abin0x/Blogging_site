@@ -32,3 +32,11 @@ class Blog(models.Model):
     def __str__(self):
         return self.title
 
+
+class BlogReaction(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    blog = models.ForeignKey(Blog, on_delete=models.CASCADE, related_name="reactions")
+    reaction = models.CharField(max_length=10, choices=[('good', 'Good'), ('bad', 'Bad')])
+
+    class Meta:
+        unique_together = ('user', 'blog')

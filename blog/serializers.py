@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Blog, Category, Tag
+from .models import Blog, Category, Tag, BlogReaction
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -54,6 +54,6 @@ class BlogSerializer(serializers.ModelSerializer):
 
 class BlogReactionSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Blog
-        fields = ['good_reactions', 'bad_reactions', 'views_count']
-        read_only_fields = ['views_count'] # Prevent views count from being updated via this endpoint
+        model = BlogReaction
+        fields = ['user', 'blog', 'reaction']
+        read_only_fields = ['user', 'blog']  # Assuming user and blog are set on creation and cannot be updated
