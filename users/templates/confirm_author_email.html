@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirm Your Email</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f7f7f7;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 16px;
+            line-height: 1.5;
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        /* Button Styles */
+        .button {
+            display: inline-block;
+            background-color: #007BFF;
+            color: #fff;
+            font-size: 18px;
+            font-weight: bold;
+            text-decoration: none;
+            padding: 15px 30px;
+            border-radius: 30px;
+            text-align: center;
+            margin: 20px auto;
+            display: block;
+            width: fit-content;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+
+        /* Hover Effect */
+        .button:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+
+        /* Animation */
+        @keyframes slideIn {
+            0% {
+                transform: translateX(-50%);
+                opacity: 0;
+            }
+            100% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .container {
+            animation: slideIn 1s ease-out;
+        }
+        
+        /* Footer Styles */
+        .footer {
+            text-align: center;
+            font-size: 14px;
+            color: #777;
+            margin-top: 20px;
+        }
+
+        .footer a {
+            color: #007BFF;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to Our Platform!</h1>
+        <p>Dear Author,</p>
+        <p>Thank you for registering. Please confirm your email by clicking the link below:</p>
+        <a href="{{ confirm_link }}" class="button">Confirm Email</a>
+        <div class="footer">
+            <p>If you did not register for this account, please ignore this email.</p>
+            <p>For support, <a href="mailto:support@platform.com">contact us</a>.</p>
+        </div>
+    </div>
+</body>
+</html>
