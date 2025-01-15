@@ -50,3 +50,10 @@ class BlogSerializer(serializers.ModelSerializer):
         instance.tags.set(tags)  # Update tags
         instance.save()
         return instance
+
+
+class BlogReactionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Blog
+        fields = ['good_reactions', 'bad_reactions', 'views_count']
+        read_only_fields = ['views_count'] # Prevent views count from being updated via this endpoint

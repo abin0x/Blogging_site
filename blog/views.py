@@ -66,3 +66,43 @@ class BlogSearchAPIView(ListAPIView):
                 Q(tags__icontains=search_query)  # Search by tags
             ).distinct()  # Ensure distinct results in case of multiple matches
         return queryset
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .serializers import BlogReactionSerializer
+
+class BlogReactionAPIView(APIView):
+    def get(self, request, pk):
+        """
+        Retrieve a blog and increment its views count.
+        """
+        try:
+            blog = Blog.objects.get(pk=pk, is_published=True)
+            blog.views_count += 1  # Increment the view count
+            blog.save(update_fields=['views_count'])
+            serializer = BlogReactionSerializer(blog)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Blog.DoesNotExist:
+            return Response({'error': 'Blog not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    def post(self, request, pk):
+        """
+        Allow users to react to a blog (Good or Bad).
+        """
+        try:
+            blog = Blog.objects.get(pk=pk, is_published=True)
+            reaction = request.data.get('reaction')  # 'good' or 'bad'
+
+            if reaction == 'good':
+                blog.good_reactions += 1
+            elif reaction == 'bad':
+                blog.bad_reactions += 1
+            else:
+                return Response({'error': 'Invalid reaction'}, status=status.HTTP_400_BAD_REQUEST)
+
+            blog.save(update_fields=['good_reactions', 'bad_reactions'])
+            serializer = BlogReactionSerializer(blog)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Blog.DoesNotExist:
+            return Response({'error': 'Blog not found'}, status=status.HTTP_404_NOT_FOUND)
