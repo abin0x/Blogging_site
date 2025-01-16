@@ -33,10 +33,26 @@ class Blog(models.Model):
         return self.title
 
 
-class BlogReaction(models.Model):
+
+class BlogReactions(models.Model):
+    blog = models.ForeignKey(Blog, on_delete=models.CASCADE, related_name='reactions')
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    blog = models.ForeignKey(Blog, on_delete=models.CASCADE, related_name="reactions")
-    reaction = models.CharField(max_length=10, choices=[('good', 'Good'), ('bad', 'Bad')])
+    # reaction = models.CharField(max_length=10, choices=[('good', 'Good'), ('bad', 'Bad')])
+    reaction = models.CharField(max_length=10, choices=[('good', 'Good'), ('bad', 'Bad')], default='good')  
 
     class Meta:
-        unique_together = ('user', 'blog')
+        unique_together = ('blog', 'user')
+
+class BlogView(models.Model):
+    blog = models.ForeignKey(Blog, on_delete=models.CASCADE, related_name='views')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
+    session_key = models.CharField(max_length=255, null=True, blank=True)
+    viewed_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('blog', 'user', 'session_key')  # Ensure unique views by user or session
+
+    def __str__(self):
+        if self.user:
+            return f"View of {self.blog.title} by {self.user.username}"
+        return f"Anonymous view of {self.blog.title} (session {self.session_key})"

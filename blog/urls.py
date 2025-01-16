@@ -9,4 +9,6 @@ urlpatterns = [
     path('tags/', TagListCreateAPIView.as_view(), name='tag-list-create'),
     path('search/', BlogSearchAPIView.as_view(), name='blog-search'),
     path('blogs/<int:pk>/react/', BlogReactionAPIView.as_view(), name='blog-react'),
+    # path('blogs/<int:blog_id>/comments/', CommentListCreateAPIView.as_view(), name='blog-comments'),
+
 ]
