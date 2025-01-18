@@ -10,6 +10,8 @@ from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
 from rest_framework import status
 import hashlib
+from rest_framework.pagination import PageNumberPagination
+
 
 
 class BlogReactionAPIView(generics.CreateAPIView):
@@ -19,14 +21,24 @@ class BlogReactionAPIView(generics.CreateAPIView):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
+class BlogPagination(PageNumberPagination):
+    page_size = 5  # Set the number of blogs per page
+    page_size_query_param = 'page_size'  # Allows clients to override page_size via query params
+    max_page_size = 100  # Optional: set a maximum page size limit
+
 # Blog Views
 class BlogListCreateAPIView(generics.ListCreateAPIView):
-    queryset = Blog.objects.filter(is_published=True)
+    queryset = Blog.objects.filter(is_published=True).order_by('-created_at')
+    # queryset = Blog.objects.filter(is_published=True)
     serializer_class = BlogSerializer
+    pagination_class = BlogPagination
     # permission_classes = [IsAuthenticatedOrReadOnly]  
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
+
+
+
 
 
 
@@ -88,6 +100,15 @@ class TagListCreateAPIView(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save()
+
+
+class BlogByCategoryAPIView(generics.ListAPIView):
+    serializer_class = BlogSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def get_queryset(self):
+        category_id = self.kwargs['category_id']
+        return Blog.objects.filter(category__id=category_id, is_published=True)  # Filter by category
 
 
 # Blog Search View

@@ -88,6 +88,12 @@ LANGUAGE_CODE = 'bn'
 TIME_ZONE = 'Asia/Dhaka'  # Adjust according to your timezone preference
 
 
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 9,  # Set the default page size to 9
+}
+
+
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
