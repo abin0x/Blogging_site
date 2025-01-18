@@ -161,6 +161,7 @@ class BlogSearchAPIView(ListAPIView):
 
 #         blog.save(update_fields=['good_reactions', 'bad_reactions'])
 #         return Response({'message': 'Reaction updated successfully.'}, status=status.HTTP_200_OK)
+# reaction view
 
 class BlogReactionAPIView(generics.UpdateAPIView):
     queryset = Blog.objects.all()
