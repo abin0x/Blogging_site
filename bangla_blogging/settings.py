@@ -55,6 +55,7 @@ CORS_ALLOWED_ORIGINS = [
     'http://127.0.0.1:5501',
 ]
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -83,6 +84,8 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'bangla_blogging.wsgi.application'
+LANGUAGE_CODE = 'bn'
+TIME_ZONE = 'Asia/Dhaka'  # Adjust according to your timezone preference
 
 
 # Database

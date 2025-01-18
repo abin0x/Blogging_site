@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from .models import Blog, Category, Tag, BlogReactions, BlogView
+from django.utils.translation import activate
+from django.utils import timezone
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -59,10 +61,18 @@ class BlogSerializer(serializers.ModelSerializer):
     good_reactions_count = serializers.IntegerField(read_only=True)
     bad_reactions_count = serializers.IntegerField(read_only=True)
     views_count = serializers.IntegerField(read_only=True)
+    reading_time = serializers.IntegerField(read_only=True)  # Add reading time field
 
     def to_representation(self, instance):
+        # Activate Bengali locale for the datetime fields
+        activate('bn')
+        
         # Customize representation to show names for category and tags
         representation = super().to_representation(instance)
+
+        # Format created_at and updated_at in Bengali date-time format
+        representation['created_at'] = instance.created_at.astimezone(timezone.get_current_timezone()).strftime('%d %B, %Y - %I:%M%p')
+        representation['updated_at'] = instance.updated_at.astimezone(timezone.get_current_timezone()).strftime('%d %B, %Y - %I:%M%p')
         representation['category'] = {
             'id': instance.category.id,
             'name': instance.category.name
@@ -82,6 +92,14 @@ class BlogSerializer(serializers.ModelSerializer):
         views = BlogView.objects.filter(blog=instance).count()
         representation['views_count'] = views
 
+        # Estimate reading time based on content length (average reading speed 250 words per minute)
+        word_count = len(instance.content.split())  # Count the words in the content
+        reading_time_minutes = word_count // 200  # Estimate reading time in minutes
+        if word_count % 200 > 0:
+            reading_time_minutes += 1  # Round up if not a complete minute
+        representation['reading_time'] = reading_time_minutes
+
+
         return representation
 
     class Meta:
@@ -90,7 +108,7 @@ class BlogSerializer(serializers.ModelSerializer):
             'id', 'author', 'title', 'content',
             'category', 'tags', 'featured_image',
             'is_published', 'created_at', 'updated_at',
-            'good_reactions_count', 'bad_reactions_count', 'views_count'
+            'good_reactions_count', 'bad_reactions_count', 'views_count','reading_time'
         ]
 
     def create(self, validated_data):
