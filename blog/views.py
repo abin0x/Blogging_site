@@ -41,6 +41,10 @@ class BlogListCreateAPIView(generics.ListCreateAPIView):
 
 
 
+from django.http import HttpResponse
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+
 
 class BlogDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Blog.objects.all()
@@ -81,6 +85,35 @@ class BlogDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
         else:
             ip = request.META.get('REMOTE_ADDR')
         return ip
+    def download_pdf(self, request, *args, **kwargs):
+    
+        blog = self.get_object()
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="{blog.title}.pdf"'
+
+        # Create PDF
+        pdf = canvas.Canvas(response, pagesize=letter)
+        pdf.setFont("Helvetica", 12)
+
+        # Write the blog content to the PDF
+        pdf.drawString(100, 750, f"Blog Title: {blog.title}")
+        pdf.drawString(100, 730, f"Author: {blog.author.username}")
+        pdf.drawString(100, 710, f"Published: {blog.created_at.strftime('%Y-%m-%d')}")
+        pdf.drawString(100, 690, f"Reading Time: {blog.reading_time} mins")
+        pdf.drawString(100, 670, f"Category: {blog.category.name}")
+        pdf.drawString(100, 650, f"Content:")
+        text_object = pdf.beginText(100, 630)
+        text_object.setFont("Helvetica", 10)
+        text_object.textLines(blog.content)
+        pdf.drawText(text_object)
+
+        # Save the PDF
+        pdf.showPage()
+        pdf.save()
+
+        return response
+
+
 
 
 # Category Views
@@ -162,11 +195,9 @@ class BlogSearchAPIView(ListAPIView):
 #         blog.save(update_fields=['good_reactions', 'bad_reactions'])
 #         return Response({'message': 'Reaction updated successfully.'}, status=status.HTTP_200_OK)
 # reaction view
-
 class BlogReactionAPIView(generics.UpdateAPIView):
     queryset = Blog.objects.all()
     serializer_class = BlogReactionSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]  # Allow any user (authenticated or non-authenticated)
 
     def update(self, request, *args, **kwargs):
         blog = self.get_object()  # Get the Blog object from the URL parameters
@@ -188,11 +219,11 @@ class BlogReactionAPIView(generics.UpdateAPIView):
             # For non-authenticated users, use session_key as the unique identifier
             user_reaction, created = BlogReactions.objects.get_or_create(session_key=session_key, blog=blog)
 
-        # If the reaction is the same as before, return an error
+        # If the reaction is the same as before, allow the user to change it
         if not created and user_reaction.reaction == reaction:
-            return Response({'error': 'You have already reacted with this choice.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'You have already reacted with this choice. You can change it.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Decrement the old reaction count
+        # Decrement the old reaction count (if the user had already reacted)
         if user_reaction.reaction == 'good':
             blog.good_reactions -= 1
         elif user_reaction.reaction == 'bad':

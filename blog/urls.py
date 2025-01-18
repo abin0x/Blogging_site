@@ -10,6 +10,7 @@ urlpatterns = [
     path('search/', BlogSearchAPIView.as_view(), name='blog-search'),
     path('blogs/<int:pk>/react/', BlogReactionAPIView.as_view(), name='blog-react'),
     path('cat/<int:category_id>/blogs/', BlogByCategoryAPIView.as_view(), name='category-blogs'),
+    path('blogs/<int:pk>/download-pdf/', BlogDetailAPIView.as_view(), name='blog-pdf-download'),
     # path('blogs/<int:blog_id>/comments/', CommentListCreateAPIView.as_view(), name='blog-comments'),
 
 ]
