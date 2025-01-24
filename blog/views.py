@@ -135,9 +135,25 @@ class TagListCreateAPIView(generics.ListCreateAPIView):
         serializer.save()
 
 
+# class BlogByCategoryAPIView(generics.ListAPIView):
+#     serializer_class = BlogSerializer
+#     permission_classes = [IsAuthenticatedOrReadOnly]
+
+#     def get_queryset(self):
+#         category_id = self.kwargs['category_id']
+#         return Blog.objects.filter(category__id=category_id, is_published=True)  # Filter by category
+
+from rest_framework.pagination import PageNumberPagination
+
+class BlogByCategoryPagination(PageNumberPagination):
+    page_size = 2  # Number of blogs per page
+    page_size_query_param = 'page_size'  # Allow the client to set the page size
+    max_page_size = 10  # Maximum number of blogs per page
+
 class BlogByCategoryAPIView(generics.ListAPIView):
     serializer_class = BlogSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
+    pagination_class = BlogByCategoryPagination
 
     def get_queryset(self):
         category_id = self.kwargs['category_id']
