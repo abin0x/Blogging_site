@@ -74,8 +74,16 @@ class BlogDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
 
             if not BlogView.objects.filter(blog=blog, session_key=session_key).exists():
                 BlogView.objects.create(blog=blog, session_key=session_key)
+        
+        # Fetch blogs in the same category, excluding the current blog
+        related_blogs = Blog.objects.filter(category=blog.category).exclude(id=blog.id)
 
-        return self.retrieve(request, *args, **kwargs)
+        # Include related blogs in the response
+        response = self.retrieve(request, *args, **kwargs)
+        response.data['related_blogs'] = BlogSerializer(related_blogs, many=True).data
+
+        # return self.retrieve(request, *args, **kwargs)
+        return response
 
     def get_client_ip(self, request):
         """Helper function to get client IP address"""
