@@ -76,14 +76,14 @@ class BlogDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
                 BlogView.objects.create(blog=blog, session_key=session_key)
         
         # Fetch blogs in the same category, excluding the current blog
-        related_blogs = Blog.objects.filter(category=blog.category).exclude(id=blog.id)
+        related_blogs = Blog.objects.filter(category=blog.category).exclude(id=blog.id) #এটা নতুন লাইন আপডেট করা হয়েছে।
 
         # Include related blogs in the response
-        response = self.retrieve(request, *args, **kwargs)
-        response.data['related_blogs'] = BlogSerializer(related_blogs, many=True).data
+        response = self.retrieve(request, *args, **kwargs) #এটা নতুন লাইন আপডেট করা হয়েছে।
+        response.data['related_blogs'] = BlogSerializer(related_blogs, many=True).data #এটা নতুন লাইন আপডেট করা হয়েছে।
 
         # return self.retrieve(request, *args, **kwargs)
-        return response
+        return response #এটা নতুন লাইন আপডেট করা হয়েছে।
 
     def get_client_ip(self, request):
         """Helper function to get client IP address"""
