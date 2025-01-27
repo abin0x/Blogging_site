@@ -95,3 +95,35 @@ class BlogReactionSerializer(serializers.ModelSerializer):
         model = BlogReactions
         fields = ['id', 'blog', 'user', 'reaction']
         read_only_fields = ['user']
+
+
+
+
+from rest_framework import serializers
+from .models import BlogSubmission
+from django.core.mail import send_mail
+
+class BlogSubmissionSerializer(serializers.ModelSerializer):
+    user = serializers.StringRelatedField(read_only=True)  # Display username
+
+    class Meta:
+        model = BlogSubmission
+        fields = ['id', 'title', 'content', 'name', 'phone_number', 'user', 'created_at']
+
+    def create(self, validated_data):
+        user = self.context['request'].user
+        validated_data['user'] = user
+        blog_submission = BlogSubmission.objects.create(**validated_data)
+
+        # Send email
+        send_mail(
+            subject=blog_submission.title,
+            message=f"Blog Title: {blog_submission.title}\n"
+                    f"Author Name: {blog_submission.name}\n"
+                    f"Phone: {blog_submission.phone_number}\n\n"
+                    f"Content:\n{blog_submission.content}",
+            from_email="mahmudulabin@gmail.com",
+            recipient_list=["4819abin@gmail.com"],
+            fail_silently=False,
+        )
+        return blog_submission

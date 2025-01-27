@@ -1,6 +1,6 @@
 # urls.py
 from django.urls import path
-from .views import BlogListCreateAPIView, BlogDetailAPIView,CategoryListCreateAPIView, TagListCreateAPIView, BlogSearchAPIView, BlogReactionAPIView,BlogByCategoryAPIView
+from .views import BlogListCreateAPIView, BlogDetailAPIView,CategoryListCreateAPIView, TagListCreateAPIView, BlogSearchAPIView, BlogReactionAPIView,BlogByCategoryAPIView, BlogSubmissionListCreateAPIView
 
 urlpatterns = [
     path('blogs/', BlogListCreateAPIView.as_view(), name='blog-list-create'),
@@ -11,6 +11,8 @@ urlpatterns = [
     path('blogs/<int:pk>/react/', BlogReactionAPIView.as_view(), name='blog-react'),
     path('cat/<int:category_id>/blogs/', BlogByCategoryAPIView.as_view(), name='category-blogs'),
     path('blogs/<int:pk>/download-pdf/', BlogDetailAPIView.as_view(), name='blog-pdf-download'),
+    path('submissions/', BlogSubmissionListCreateAPIView.as_view(), name='blog-submissions'),
+]
     # path('blogs/<int:blog_id>/comments/', CommentListCreateAPIView.as_view(), name='blog-comments'),
 
-]
+

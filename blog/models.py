@@ -57,3 +57,18 @@ class BlogView(models.Model):
         if self.user:
             return f"View of {self.blog.title} by {self.user.username}"
         return f"Anonymous view of {self.blog.title} (session {self.session_key})"
+
+
+
+
+class BlogSubmission(models.Model):
+    title = models.CharField(max_length=255)
+    content = models.TextField()
+    name = models.CharField(max_length=100)
+    phone_number = models.CharField(max_length=15)
+    # user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="submissions")
+    user = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title

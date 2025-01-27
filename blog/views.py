@@ -42,6 +42,7 @@ class BlogListCreateAPIView(generics.ListCreateAPIView):
 
 
 
+
 from django.http import HttpResponse
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
@@ -244,3 +245,20 @@ class BlogReactionAPIView(generics.UpdateAPIView):
         else:
             ip = request.META.get('REMOTE_ADDR')
         return ip
+    
+
+
+
+
+
+from rest_framework import generics, permissions
+from .models import BlogSubmission
+from .serializers import BlogSubmissionSerializer
+
+class BlogSubmissionListCreateAPIView(generics.ListCreateAPIView):
+    queryset = BlogSubmission.objects.all()
+    serializer_class = BlogSubmissionSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
