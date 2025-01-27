@@ -99,9 +99,39 @@ class BlogReactionSerializer(serializers.ModelSerializer):
 
 
 
+# from rest_framework import serializers
+# from .models import BlogSubmission
+# from django.core.mail import send_mail
+
+# class BlogSubmissionSerializer(serializers.ModelSerializer):
+#     user = serializers.StringRelatedField(read_only=True)  # Display username
+
+#     class Meta:
+#         model = BlogSubmission
+#         fields = ['id', 'title', 'content', 'name', 'phone_number', 'user', 'created_at']
+
+#     def create(self, validated_data):
+#         user = self.context['request'].user
+#         validated_data['user'] = user
+#         blog_submission = BlogSubmission.objects.create(**validated_data)
+
+#         # Send email
+#         send_mail(
+#             subject=blog_submission.title,
+#             message=f"Blog Title: {blog_submission.title}\n"
+#                     f"Author Name: {blog_submission.name}\n"
+#                     f"Phone: {blog_submission.phone_number}\n\n"
+#                     f"Content:\n{blog_submission.content}",
+#             from_email="mahmudulabin@gmail.com",
+#             recipient_list=["4819abin@gmail.com"],
+#             fail_silently=False,
+#         )
+#         return blog_submission
+
 from rest_framework import serializers
 from .models import BlogSubmission
 from django.core.mail import send_mail
+from django.template.loader import render_to_string
 
 class BlogSubmissionSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField(read_only=True)  # Display username
@@ -115,15 +145,23 @@ class BlogSubmissionSerializer(serializers.ModelSerializer):
         validated_data['user'] = user
         blog_submission = BlogSubmission.objects.create(**validated_data)
 
-        # Send email
+        # Render HTML email content
+        email_subject = blog_submission.title
+        email_body = render_to_string('email/blog_submission_email.html', {
+            'title': blog_submission.title,
+            'name': blog_submission.name,
+            'phone_number': blog_submission.phone_number,
+            'content': blog_submission.content,
+            'user': blog_submission.user,
+        })
+
+        # Send the email with HTML body
         send_mail(
-            subject=blog_submission.title,
-            message=f"Blog Title: {blog_submission.title}\n"
-                    f"Author Name: {blog_submission.name}\n"
-                    f"Phone: {blog_submission.phone_number}\n\n"
-                    f"Content:\n{blog_submission.content}",
+            subject=email_subject,
+            message="",  # Leave the plain text message empty as we're using HTML
             from_email="mahmudulabin@gmail.com",
             recipient_list=["4819abin@gmail.com"],
+            html_message=email_body,  # This is where we pass the HTML email body
             fail_silently=False,
         )
         return blog_submission

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Submission</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7fa;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #4CAF50;
+        }
+        .header h2 {
+            font-size: 24px;
+            margin: 0;
+        }
+        .content {
+            margin-bottom: 30px;
+        }
+        .content p {
+            font-size: 16px;
+            line-height: 1.5;
+            margin: 10px 0;
+        }
+        .content p strong {
+            color: #333;
+        }
+        .footer {
+            font-size: 12px;
+            text-align: center;
+            color: #777;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        .footer p {
+            margin: 10px 0;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            text-align: center;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        .btn:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>{{ title }}</h2>
+        </div>
+        <div class="content">
+            <p><strong>Author:</strong> {{ name }}</p>
+            <p><strong>Phone Number:</strong> {{ phone_number }}</p>
+            <p><strong>Content:</strong></p>
+            <p>{{ content }}</p>
+        </div>
+        <a href="mailto:mahmudulabin@gmail.com" class="btn">Reply to Author</a>
+        <div class="footer">
+            <p>Thank you for your attention! If you have any questions, don't hesitate to contact us.</p>
+            <p>© 2025 Blog Submission Service. All Rights Reserved.</p>
+        </div>
+    </div>
+</body>
+</html>
