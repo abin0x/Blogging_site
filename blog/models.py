@@ -18,7 +18,8 @@ class Blog(models.Model):
     title = models.CharField(max_length=255)
     content = models.TextField()
     featured_image = models.URLField(null=True, blank=True)
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    # author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    author = models.CharField(max_length=255)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name='blogs')  # Single category
     tags = models.ManyToManyField(Tag, related_name='blogs')  # Change to ManyToManyField
 

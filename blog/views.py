@@ -35,7 +35,8 @@ class BlogListCreateAPIView(generics.ListCreateAPIView):
     # permission_classes = [IsAuthenticatedOrReadOnly]  
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+        # serializer.save(author=self.request.user)
+        serializer.save()
 
 
 
@@ -185,40 +186,6 @@ class BlogSearchAPIView(ListAPIView):
         return queryset
 
 
-# class BlogReactionAPIView(generics.UpdateAPIView):
-#     queryset = Blog.objects.all()
-#     serializer_class = BlogReactionSerializer
-#     permission_classes = [IsAuthenticated]
-
-#     def update(self, request, *args, **kwargs):
-#         blog = self.get_object()
-#         user = request.user
-#         reaction = request.data.get('reaction')
-
-#         if reaction not in ['good', 'bad']:
-#             raise ValidationError({'error': 'Invalid reaction type.'})
-
-#         user_reaction, created = BlogReactions.objects.get_or_create(user=user, blog=blog)
-
-#         if not created and user_reaction.reaction == reaction:
-#             return Response({'error': 'You have already reacted with this choice.'}, status=status.HTTP_400_BAD_REQUEST)
-
-#         if user_reaction.reaction == 'good':
-#             blog.good_reactions -= 1
-#         elif user_reaction.reaction == 'bad':
-#             blog.bad_reactions -= 1
-
-#         user_reaction.reaction = reaction
-#         user_reaction.save()
-
-#         if reaction == 'good':
-#             blog.good_reactions += 1
-#         elif reaction == 'bad':
-#             blog.bad_reactions += 1
-
-#         blog.save(update_fields=['good_reactions', 'bad_reactions'])
-#         return Response({'message': 'Reaction updated successfully.'}, status=status.HTTP_200_OK)
-# reaction view
 class BlogReactionAPIView(generics.UpdateAPIView):
     queryset = Blog.objects.all()
     serializer_class = BlogReactionSerializer
