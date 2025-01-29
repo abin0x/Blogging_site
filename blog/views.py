@@ -258,7 +258,7 @@ from .serializers import BlogSubmissionSerializer
 class BlogSubmissionListCreateAPIView(generics.ListCreateAPIView):
     queryset = BlogSubmission.objects.all()
     serializer_class = BlogSubmissionSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
