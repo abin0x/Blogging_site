@@ -262,3 +262,64 @@ class BlogSubmissionListCreateAPIView(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+
+
+# views.py
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .models import MediaItem
+from .serializers import MediaItemSerializer
+from rest_framework import generics, status
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from .models import MediaItem
+from .serializers import MediaItemSerializer
+
+class MediaItemListCreateView(generics.ListCreateAPIView):
+    """
+    API view to list all media items or create a new one.
+    """
+    queryset = MediaItem.objects.all()
+    serializer_class = MediaItemSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]  # Anyone can view, but only authenticated users can create
+
+    def create(self, request, *args, **kwargs):
+        """
+        Custom create method to handle additional validation if needed.
+        """
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class MediaItemDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    API view to retrieve, update, or delete a media item.
+    """
+    queryset = MediaItem.objects.all()
+    serializer_class = MediaItemSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]  # Authenticated users can modify, others can only view
+
+    def update(self, request, *args, **kwargs):
+        """
+        Custom update method to handle media updates.
+        """
+        partial = kwargs.pop("partial", False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, *args, **kwargs):
+        """
+        Custom delete method with a success response.
+        """
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response({"message": "Media item deleted successfully"}, status=status.HTTP_204_NO_CONTENT)

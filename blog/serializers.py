@@ -169,3 +169,15 @@ class BlogSubmissionSerializer(serializers.ModelSerializer):
 
 
 # jsdflkd 
+
+
+
+# serializers.py
+
+from rest_framework import serializers
+from .models import MediaItem
+
+class MediaItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MediaItem
+        fields = ['id', 'title', 'description', 'youtube_url', 'thumbnail', 'created_at', 'media_type']
