@@ -22,3 +22,4 @@ admin.site.register(Tag)
 admin.site.register(BlogReactions)
 admin.site.register(BlogSubmission)
 admin.site.register(MediaCard)
+# jhdjsjds
