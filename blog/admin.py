@@ -6,7 +6,7 @@ class CategoryAdmin(admin.ModelAdmin):
     search_fields = ('name',)
 
 from django.contrib import admin
-from .models import Blog, Category, Tag, BlogReactions, BlogSubmission, BlogView
+from .models import Blog, Category, Tag, BlogReactions, BlogSubmission, BlogView,MediaCard
 
 # @admin.register(Blog)
 class BlogAdmin(admin.ModelAdmin):
@@ -21,3 +21,4 @@ admin.site.register(Blog, BlogAdmin)
 admin.site.register(Tag)
 admin.site.register(BlogReactions)
 admin.site.register(BlogSubmission)
+admin.site.register(MediaCard)
