@@ -64,6 +64,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+YOUTUBE_API_KEY = 'AIzaSyDHGCSqTRvemZ1fuxB5QvaryFEggotKu_w'
 
 ROOT_URLCONF = 'bangla_blogging.urls'
 

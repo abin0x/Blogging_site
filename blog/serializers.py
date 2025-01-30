@@ -181,3 +181,21 @@ class MediaItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = MediaItem
         fields = ['id', 'title', 'description', 'youtube_url', 'thumbnail', 'created_at', 'media_type']
+
+
+
+# from rest_framework import serializers
+from .models import MediaCard, Video
+
+class VideoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Video
+        fields = '__all__'
+
+
+class MediaCardSerializer(serializers.ModelSerializer):
+    videos = VideoSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = MediaCard
+        fields = '__all__'

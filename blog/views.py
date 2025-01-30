@@ -323,3 +323,70 @@ class MediaItemDetailView(generics.RetrieveUpdateDestroyAPIView):
         instance = self.get_object()
         self.perform_destroy(instance)
         return Response({"message": "Media item deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+    
+from googleapiclient.discovery import build
+from django.conf import settings
+from rest_framework import generics
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from django.http import JsonResponse
+from .models import MediaCard
+from .serializers import MediaCardSerializer
+
+
+# Initialize the YouTube API client
+def get_youtube_service():
+    api_key = settings.YOUTUBE_API_KEY  # Retrieve the API key from settings
+    return build('youtube', 'v3', developerKey=api_key)
+
+# Fetch videos from a YouTube playlist
+def get_playlist_videos(playlist_id):
+    youtube = get_youtube_service()
+    
+    # Request to fetch playlist items
+    request = youtube.playlistItems().list(
+        part='snippet',
+        playlistId=playlist_id,
+        maxResults=50  # Max number of results to fetch (you can adjust this)
+    )
+    response = request.execute()
+    
+    videos = []
+    for item in response['items']:
+        video_id = item['snippet']['resourceId']['videoId']
+        title = item['snippet']['title']
+        description = item['snippet']['description']
+        thumbnail = item['snippet']['thumbnails']['high']['url']
+        
+        videos.append({
+            'video_id': video_id,
+            'title': title,
+            'description': description,
+            'thumbnail': thumbnail,
+            'url': f'https://www.youtube.com/watch?v={video_id}'
+        })
+    
+    return videos
+
+# MediaCard List and Create API using generics
+class MediaCardListCreateAPIView(generics.ListCreateAPIView):
+    queryset = MediaCard.objects.all()
+    serializer_class = MediaCardSerializer
+
+    def perform_create(self, serializer):
+        """
+        Override the create method to handle additional logic when creating a MediaCard.
+        """
+        serializer.save()
+
+# Playlist Video List API using APIView (since we interact with the YouTube API)
+class PlaylistVideoListAPIView(APIView):
+    """
+    API view for listing videos in a specific YouTube playlist.
+    """
+    def get(self, request, playlist_id):
+        # Get the videos from the YouTube playlist
+        videos = get_playlist_videos(playlist_id)
+        
+        # Return the videos as JSON response
+        return JsonResponse({'videos': videos})
