@@ -1,6 +1,6 @@
 # urls.py
 from django.urls import path
-from .views import BlogListCreateAPIView, BlogDetailAPIView,CategoryListCreateAPIView, TagListCreateAPIView, BlogSearchAPIView, BlogReactionAPIView,BlogByCategoryAPIView, BlogSubmissionListCreateAPIView,MediaItemListCreateView,MediaItemDetailView,MediaCardListCreateAPIView, PlaylistVideoListAPIView
+from .views import BlogListCreateAPIView, BlogDetailAPIView,CategoryListCreateAPIView, TagListCreateAPIView, BlogSearchAPIView, BlogReactionAPIView,BlogByCategoryAPIView, BlogSubmissionListCreateAPIView,MediaItemListCreateView,MediaItemDetailView,MediaCardListCreateAPIView, PlaylistVideoListAPIView,DashboardAPIView
 
 urlpatterns = [
     path('blogs/', BlogListCreateAPIView.as_view(), name='blog-list-create'),
@@ -17,6 +17,7 @@ urlpatterns = [
     # path('media/<int:pk>/',MediaItemDetailView.as_view(), name='media-item-detail'),
     path('media/', MediaCardListCreateAPIView.as_view(), name='media-card-create'),
     path('media/<str:playlist_id>/', PlaylistVideoListAPIView.as_view(), name='playlist-video-list'),
+    path('dashboard/', DashboardAPIView.as_view(), name='dashboard'),
 ]
     # path('blogs/<int:blog_id>/comments/', CommentListCreateAPIView.as_view(), name='blog-comments'),
 

@@ -199,3 +199,11 @@ class MediaCardSerializer(serializers.ModelSerializer):
     class Meta:
         model = MediaCard
         fields = '__all__'
+
+
+
+class BlogViewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BlogView
+        fields = ['blog', 'user', 'viewed_at']
+        read_only_fields = ['user', 'blog']

@@ -16,7 +16,7 @@ from rest_framework.pagination import PageNumberPagination
 
 class BlogReactionAPIView(generics.CreateAPIView):
     serializer_class = BlogReactionSerializer
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -130,8 +130,7 @@ class BlogDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
 class CategoryListCreateAPIView(generics.ListCreateAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]  # Allow anyone to view, but restrict creation to authenticated users
-
+    # permission_classes = [IsAuthenticatedOrReadOnly] 
     def perform_create(self, serializer):
         serializer.save()
 
@@ -139,8 +138,7 @@ class CategoryListCreateAPIView(generics.ListCreateAPIView):
 class TagListCreateAPIView(generics.ListCreateAPIView):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]  # Allow anyone to view, but restrict creation to authenticated users
-
+    # permission_classes = [IsAuthenticatedOrReadOnly]  
     def perform_create(self, serializer):
         serializer.save()
 
@@ -162,7 +160,7 @@ class BlogByCategoryPagination(PageNumberPagination):
 
 class BlogByCategoryAPIView(generics.ListAPIView):
     serializer_class = BlogSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    # permission_classes = [IsAuthenticatedOrReadOnly]
     pagination_class = BlogByCategoryPagination
 
     def get_queryset(self):
@@ -284,7 +282,7 @@ class MediaItemListCreateView(generics.ListCreateAPIView):
     """
     queryset = MediaItem.objects.all()
     serializer_class = MediaItemSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]  # Anyone can view, but only authenticated users can create
+    # permission_classes = [IsAuthenticatedOrReadOnly]  
 
     def create(self, request, *args, **kwargs):
         """
@@ -302,7 +300,7 @@ class MediaItemDetailView(generics.RetrieveUpdateDestroyAPIView):
     """
     queryset = MediaItem.objects.all()
     serializer_class = MediaItemSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]  # Authenticated users can modify, others can only view
+    # permission_classes = [IsAuthenticatedOrReadOnly] 
 
     def update(self, request, *args, **kwargs):
         """
@@ -390,15 +388,95 @@ class PlaylistVideoListAPIView(APIView):
         
         # Return the videos as JSON response
         return JsonResponse({'videos': videos})
-# ngljdjgjfgjfjgj
-# hello everyone how are you??
-# hi my name is mahmudul hasan abin
-# how are you??
-# fjkgfkg
-# njflfdg 
-# igjnflkjgdfkg 
-# fljk 
-# ijfjfjfdjskf
-# jglfglkf 
-# kjljgf ng 
-# jlfdjsk 
+    
+
+
+
+
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from.models import Blog, Category, Tag, BlogReactions, BlogView, MediaItem, MediaCard
+from django.db.models import Count
+from.serializers import (
+    BlogSerializer, CategorySerializer, TagSerializer, BlogReactionSerializer,
+    BlogViewSerializer, MediaItemSerializer, MediaCardSerializer
+)
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+
+class DashboardAPIView(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    # permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def get(self, request):
+        # Blog statistics
+        total_blogs = Blog.objects.count()
+        published_blogs = Blog.objects.filter(is_published=True).count()
+        draft_blogs = total_blogs - published_blogs
+
+        # Category statistics
+        total_categories = Category.objects.count()
+        categories_with_blogs = Category.objects.annotate(num_blogs=Count('blogs')).filter(num_blogs__gt=0).count()
+        categories = Category.objects.all()
+        category_serializer = CategorySerializer(categories, many=True)
+
+        # Tag statistics
+        total_tags = Tag.objects.count()
+        tags_with_blogs = Tag.objects.annotate(num_blogs=Count('blogs')).filter(num_blogs__gt=0).count()
+        tags = Tag.objects.all()
+        tag_serializer = TagSerializer(tags, many=True)
+
+        # Media statistics
+        total_media_items = MediaItem.objects.count()
+        total_media_cards = MediaCard.objects.count()
+
+        # Recent Blogs (serialized)
+        recent_blogs = Blog.objects.filter(is_published=True).order_by('-created_at')[:5]  # Get the 5 most recent
+        recent_blogs_serializer = BlogSerializer(recent_blogs, many=True, context={'request': request})
+
+        # Popular Tags (serialized) - Get the top 5 most popular tags
+        popular_tags = Tag.objects.annotate(blog_count=Count('blogs')).order_by('-blog_count')[:5]
+        popular_tags_serializer = TagSerializer(popular_tags, many=True)
+
+        # Category with most blogs (serialized)
+        category_with_most_blogs = Category.objects.annotate(blog_count=Count('blogs')).order_by('-blog_count').first()
+        category_with_most_blogs_serializer = CategorySerializer(category_with_most_blogs) if category_with_most_blogs else None
+
+
+        # Reactions and Views data (aggregated)
+        total_good_reactions = BlogReactions.objects.filter(reaction='good').count()
+        total_bad_reactions = BlogReactions.objects.filter(reaction='bad').count()
+        total_views = BlogView.objects.count()
+
+        data = {
+            'blog_stats': {
+                'total_blogs': total_blogs,
+                'published_blogs': published_blogs,
+                'draft_blogs': draft_blogs,
+            },
+            'category_stats': {
+                'total_categories': total_categories,
+                'categories_with_blogs': categories_with_blogs,
+                'categories': category_serializer.data,
+                'category_with_most_blogs': category_with_most_blogs_serializer.data if category_with_most_blogs_serializer else None,
+            },
+            'tag_stats': {
+                'total_tags': total_tags,
+                'tags_with_blogs': tags_with_blogs,
+                'tags': tag_serializer.data,
+            },
+            'media_stats': {
+                'total_media_items': total_media_items,
+                'total_media_cards': total_media_cards,
+            },
+            'recent_blogs': recent_blogs_serializer.data,
+            'popular_tags': popular_tags_serializer.data,
+            'reactions_views_stats': {
+                'total_good_reactions': total_good_reactions,
+                'total_bad_reactions': total_bad_reactions,
+                'total_views': total_views,
+            }
+        }
+
+        return Response(data)
